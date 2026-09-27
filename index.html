@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduTrack | Student Performance & Record Portal</title>
+  <!-- Google Fonts for clean, modern typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Top App Navigation Header -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">EduTrack</h1>
+          <p class="brand-subtitle">Student Record & Academic Performance Portal</p>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button id="btnExportCSV" class="btn btn-secondary" title="Export records as spreadsheet CSV">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Export CSV
+        </button>
+
+        <button id="btnOpenAddModal" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add New Student
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Application Body -->
+  <main class="main-content">
+    
+    <!-- Quick Analytics Stats Row -->
+    <section class="stats-grid" aria-label="Class Performance Overview">
+      <div class="stat-card">
+        <div class="stat-icon icon-blue">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="stat-data">
+          <span class="stat-label">Total Students</span>
+          <h2 class="stat-value" id="statTotalStudents">0</h2>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-emerald">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+        </div>
+        <div class="stat-data">
+          <span class="stat-label">Class Average Score</span>
+          <h2 class="stat-value" id="statClassAverage">0%</h2>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-purple">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="7"/>
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+          </svg>
+        </div>
+        <div class="stat-data">
+          <span class="stat-label">Top Performer</span>
+          <h2 class="stat-value truncate" id="statTopPerformer">—</h2>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-amber">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <div class="stat-data">
+          <span class="stat-label">Overall Passing Rate</span>
+          <h2 class="stat-value" id="statPassingRate">0%</h2>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter & Search Controls Bar -->
+    <section class="toolbar-card">
+      <div class="toolbar-left">
+        <!-- Live Search -->
+        <div class="search-box">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input 
+            type="search" 
+            id="searchInput" 
+            placeholder="Search by student name or roll number..." 
+            autocomplete="off"
+          />
+        </div>
+
+        <!-- Class Filter -->
+        <div class="filter-group">
+          <label for="filterClass" class="sr-only">Filter by Class</label>
+          <select id="filterClass" class="select-control">
+            <option value="ALL">All Classes</option>
+            <option value="Grade 9">Grade 9</option>
+            <option value="Grade 10">Grade 10</option>
+            <option value="Grade 11">Grade 11</option>
+            <option value="Grade 12">Grade 12</option>
+          </select>
+        </div>
+
+        <!-- Grade / Performance Status Filter -->
+        <div class="filter-group">
+          <label for="filterStatus" class="sr-only">Filter by Status</label>
+          <select id="filterStatus" class="select-control">
+            <option value="ALL">All Academic Statuses</option>
+            <option value="Distinction">Distinction (85%+)</option>
+            <option value="Passed">Passed (50% - 84%)</option>
+            <option value="Needs Improvement">Needs Improvement (&lt;50%)</option>
+          </select>
+        </div>
+
+        <!-- Sort Select -->
+        <div class="filter-group">
+          <label for="sortBy" class="sr-only">Sort By</label>
+          <select id="sortBy" class="select-control">
+            <option value="percentage-desc">Sort: Highest Marks First</option>
+            <option value="percentage-asc">Sort: Lowest Marks First</option>
+            <option value="name-asc">Sort: Name (A to Z)</option>
+            <option value="roll-asc">Sort: Roll Number</option>
+            <option value="attendance-desc">Sort: Highest Attendance</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="toolbar-right">
+        <!-- View Toggle (Cards vs Table) -->
+        <div class="view-toggle" role="group" aria-label="View toggle">
+          <button id="btnViewCards" class="toggle-btn active" title="Grid View">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            <span>Cards</span>
+          </button>
+          <button id="btnViewTable" class="toggle-btn" title="Table View">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="8" y1="6" x2="21" y2="6"/>
+              <line x1="8" y1="12" x2="21" y2="12"/>
+              <line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/>
+              <line x1="3" y1="12" x2="3.01" y2="12"/>
+              <line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+            <span>Table</span>
+          </button>
+        </div>
+
+        <!-- Reset Sample Data Button -->
+        <button id="btnResetSampleData" class="btn btn-outline-danger" title="Restore sample demo students">
+          Reset Data
+        </button>
+      </div>
+    </section>
+
+    <!-- Students Listing Section -->
+    <section id="studentsContainer" class="students-section">
+      <!-- Grid Cards View Container -->
+      <div id="cardsView" class="students-grid">
+        <!-- Rendered by JavaScript -->
+      </div>
+
+      <!-- Table View Container -->
+      <div id="tableView" class="table-container" style="display: none;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Student Info</th>
+              <th>Roll No</th>
+              <th>Class</th>
+              <th>Attendance</th>
+              <th>Marks (Total / 500)</th>
+              <th>Percentage</th>
+              <th>Grade</th>
+              <th>Status</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Rendered by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State (shown if no students match) -->
+      <div id="emptyState" class="empty-state" style="display: none;">
+        <div class="empty-icon">🔍</div>
+        <h3>No Student Records Found</h3>
+        <p>Try clearing your search query or adjusting your filters to find records.</p>
+        <button id="btnClearFilters" class="btn btn-secondary">Clear Search & Filters</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =============================================================== -->
+  <!-- ADD / EDIT STUDENT MODAL DIALOG                                  -->
+  <!-- =============================================================== -->
+  <dialog id="studentDialog" class="app-dialog">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <div>
+          <h2 id="modalTitle" class="dialog-title">Add New Student</h2>
+          <p class="dialog-subtitle">Fill in student personal details and subject scores</p>
+        </div>
+        <button id="btnCloseDialog" class="btn-close" aria-label="Close form">&times;</button>
+      </div>
+
+      <form id="studentForm" class="student-form" novalidate>
+        <input type="hidden" id="editStudentId" value="" />
+
+        <!-- Form Tabs / Sections -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <span class="step-badge">1</span>
+            Basic Student Details
+          </h3>
+          
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="fullName">Full Name <span class="required">*</span></label>
+              <input type="text" id="fullName" required placeholder="e.g. Rahul Sharma" />
+              <span class="field-error" id="errorFullName">Please enter the student's full name.</span>
+            </div>
+
+            <div class="form-field">
+              <label for="rollNumber">Roll Number / ID <span class="required">*</span></label>
+              <input type="text" id="rollNumber" required placeholder="e.g. R-101" />
+              <span class="field-error" id="errorRollNumber">Roll number is required.</span>
+            </div>
+
+            <div class="form-field">
+              <label for="studentClass">Class / Grade <span class="required">*</span></label>
+              <select id="studentClass" required>
+                <option value="">Select Class</option>
+                <option value="Grade 9">Grade 9</option>
+                <option value="Grade 10">Grade 10</option>
+                <option value="Grade 11">Grade 11</option>
+                <option value="Grade 12">Grade 12</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="section">Section</label>
+              <input type="text" id="section" placeholder="e.g. Section A" value="Section A" />
+            </div>
+
+            <div class="form-field">
+              <label for="gender">Gender</label>
+              <select id="gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="dob">Date of Birth</label>
+              <input type="date" id="dob" />
+            </div>
+
+            <div class="form-field">
+              <label for="guardianName">Parent / Guardian Name</label>
+              <input type="text" id="guardianName" placeholder="e.g. Mr. Anil Sharma" />
+            </div>
+
+            <div class="form-field">
+              <label for="guardianPhone">Parent / Student Contact Phone</label>
+              <input type="tel" id="guardianPhone" placeholder="e.g. +91 98765 43210" />
+            </div>
+
+            <div class="form-field">
+              <label for="email">Student / Contact Email</label>
+              <input type="email" id="email" placeholder="e.g. rahul.sharma@example.com" />
+            </div>
+
+            <div class="form-field">
+              <label for="attendance">Attendance Percentage (%)</label>
+              <div class="input-unit">
+                <input type="number" id="attendance" min="0" max="100" value="88" />
+                <span class="unit-symbol">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Academic Performance Scores Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <span class="step-badge">2</span>
+            Subject Performance Marks (Score out of 100)
+          </h3>
+
+          <div class="subjects-grid">
+            <div class="form-field">
+              <label for="markMath">Mathematics</label>
+              <input type="number" class="subject-input" id="markMath" min="0" max="100" placeholder="0-100" required />
+            </div>
+
+            <div class="form-field">
+              <label for="markScience">Science</label>
+              <input type="number" class="subject-input" id="markScience" min="0" max="100" placeholder="0-100" required />
+            </div>
+
+            <div class="form-field">
+              <label for="markEnglish">English</label>
+              <input type="number" class="subject-input" id="markEnglish" min="0" max="100" placeholder="0-100" required />
+            </div>
+
+            <div class="form-field">
+              <label for="markSocial">Social Studies</label>
+              <input type="number" class="subject-input" id="markSocial" min="0" max="100" placeholder="0-100" required />
+            </div>
+
+            <div class="form-field">
+              <label for="markComputer">Computer Science</label>
+              <input type="number" class="subject-input" id="markComputer" min="0" max="100" placeholder="0-100" required />
+            </div>
+          </div>
+
+          <!-- Real-Time Score Calculation Card -->
+          <div class="live-calc-box">
+            <div class="live-calc-item">
+              <span class="live-calc-title">Total Marks:</span>
+              <span class="live-calc-val" id="previewTotal">0 / 500</span>
+            </div>
+            <div class="live-calc-item">
+              <span class="live-calc-title">Percentage:</span>
+              <span class="live-calc-val" id="previewPercentage">0.0%</span>
+            </div>
+            <div class="live-calc-item">
+              <span class="live-calc-title">Estimated Grade:</span>
+              <span class="badge-grade" id="previewGrade">F</span>
+            </div>
+            <div class="live-calc-item">
+              <span class="live-calc-title">Status:</span>
+              <span class="badge-status status-fail" id="previewStatus">Needs Attention</span>
+            </div>
+          </div>
+
+          <div class="form-field" style="margin-top: 16px;">
+            <label for="remarks">Teacher's Remarks / Feedback</label>
+            <textarea id="remarks" rows="2" placeholder="e.g. Consistently active in class; has strong analytical problem-solving skills."></textarea>
+          </div>
+        </div>
+
+        <div class="dialog-actions">
+          <button type="button" id="btnCancelForm" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="btnSubmitStudent" class="btn btn-primary">
+            Save Student Record
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+
+  <!-- =============================================================== -->
+  <!-- DETAILED STUDENT REPORT CARD MODAL DIALOG (PRINTABLE)           -->
+  <!-- =============================================================== -->
+  <dialog id="reportCardDialog" class="app-dialog report-dialog">
+    <div class="dialog-content">
+      
+      <div class="dialog-header no-print">
+        <div>
+          <h2 class="dialog-title">Student Performance Report</h2>
+          <p class="dialog-subtitle">Official Academic Transcript & Student Summary</p>
+        </div>
+        <div class="header-btns">
+          <button id="btnPrintReport" class="btn btn-primary" title="Print or save as PDF">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"/>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+              <rect x="6" y="14" width="12" height="8"/>
+            </svg>
+            Print / Save PDF
+          </button>
+          <button id="btnCloseReport" class="btn-close" aria-label="Close report">&times;</button>
+        </div>
+      </div>
+
+      <!-- Printable Report Card Paper -->
+      <div id="printableReportCard" class="report-paper">
+        
+        <!-- School / Portal Banner -->
+        <div class="report-header">
+          <div class="school-brand">
+            <div class="school-logo">🎓</div>
+            <div>
+              <h2 class="school-name">SPRINGFIELD ACADEMY OF EXCELLENCE</h2>
+              <p class="school-sub">Annual Academic Evaluation & Student Cumulative Record</p>
+            </div>
+          </div>
+          <div class="report-term">
+            <span class="term-badge">Academic Session 2026-2027</span>
+          </div>
+        </div>
+
+        <hr class="report-divider" />
+
+        <!-- Student Profile Metadata Card -->
+        <div class="report-student-meta">
+          <div class="meta-avatar" id="reportAvatar">RS</div>
+          <div class="meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">Student Name:</span>
+              <strong class="meta-value" id="reportName">Rahul Sharma</strong>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Roll Number:</span>
+              <strong class="meta-value" id="reportRoll">R-101</strong>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Class & Section:</span>
+              <strong class="meta-value" id="reportClass">Grade 10 - Section A</strong>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Gender:</span>
+              <span class="meta-value" id="reportGender">Male</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Parent / Guardian:</span>
+              <span class="meta-value" id="reportGuardian">Mr. Anil Sharma</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Contact Phone:</span>
+              <span class="meta-value" id="reportPhone">+91 98765 43210</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Attendance:</span>
+              <span class="meta-value" id="reportAttendance">94%</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Email:</span>
+              <span class="meta-value" id="reportEmail">rahul@example.com</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Subject Table -->
+        <h4 class="report-section-heading">Academic Performance Breakdown</h4>
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th style="text-align: center;">Max Marks</th>
+              <th style="text-align: center;">Marks Obtained</th>
+              <th style="text-align: center;">Subject Grade</th>
+              <th>Performance Bar</th>
+            </tr>
+          </thead>
+          <tbody id="reportSubjectRows">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+
+        <!-- Summary Score Banner -->
+        <div class="report-summary-box">
+          <div class="summary-metric">
+            <span class="metric-label">Total Marks</span>
+            <span class="metric-value" id="reportTotalMarks">450 / 500</span>
+          </div>
+          <div class="summary-metric">
+            <span class="metric-label">Aggregate Percentage</span>
+            <span class="metric-value highlight" id="reportPercentage">90.0%</span>
+          </div>
+          <div class="summary-metric">
+            <span class="metric-label">Overall Grade</span>
+            <span class="metric-value grade-accent" id="reportGrade">A+</span>
+          </div>
+          <div class="summary-metric">
+            <span class="metric-label">Final Status</span>
+            <span class="metric-value status-accent" id="reportStatus">Distinction</span>
+          </div>
+        </div>
+
+        <!-- Remarks & Signature -->
+        <div class="report-footer">
+          <div class="remarks-box">
+            <span class="remarks-label">Teacher's Evaluation & Remarks:</span>
+            <p id="reportRemarks" class="remarks-text">Rahul shows exceptional clarity and enthusiasm in science and coding. Keep up the high standard!</p>
+          </div>
+
+          <div class="signatures-row">
+            <div class="signature-col">
+              <div class="signature-line"></div>
+              <span>Class Teacher's Signature</span>
+            </div>
+            <div class="signature-col">
+              <div class="signature-line"></div>
+              <span>Principal / Head of Institution</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </dialog>
+
+
+  <!-- =============================================================== -->
+  <!-- DELETE CONFIRMATION MODAL                                       -->
+  <!-- =============================================================== -->
+  <dialog id="deleteConfirmDialog" class="app-dialog confirm-dialog">
+    <div class="dialog-content">
+      <div class="confirm-icon">⚠️</div>
+      <h3 class="dialog-title">Delete Student Record?</h3>
+      <p class="dialog-subtitle" id="deleteConfirmMessage">
+        Are you sure you want to permanently delete this student record? This action cannot be undone.
+      </p>
+      <div class="dialog-actions" style="margin-top: 24px;">
+        <button id="btnCancelDelete" class="btn btn-secondary">No, Keep Record</button>
+        <button id="btnConfirmDelete" class="btn btn-danger">Yes, Delete Record</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Toast Notification Alert Box -->
+  <div id="toastNotification" class="toast-notification" role="status" aria-live="polite"></div>
+
+  <!-- JavaScript Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
